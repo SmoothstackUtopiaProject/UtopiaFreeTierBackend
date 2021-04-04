@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface PassengerRepository extends JpaRepository<Passenger, Integer> {
+public interface BookingPassengerRepository extends JpaRepository<Passenger, Integer> {
 
   @Query(value = "SELECT * FROM passenger WHERE booking_id = ?1", nativeQuery = true)
   Optional<Passenger> findByBookingId(Integer bookingId);

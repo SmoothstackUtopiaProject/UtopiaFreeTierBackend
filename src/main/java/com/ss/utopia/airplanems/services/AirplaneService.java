@@ -44,6 +44,14 @@ public class AirplaneService {
 		return optionalAirplane.get();
 	}
 
+	public AirplaneType findAirplaneTypeById(Integer airplaneTypeId) throws AirplaneTypeNotFoundException {
+		Optional<AirplaneType> optionalAirplaneType = airplaneTypeRepository.findById(airplaneTypeId);
+		if(!optionalAirplaneType.isPresent()) {
+			throw new AirplaneTypeNotFoundException("No AirplaneType with ID: " + airplaneTypeId + " exists.");
+		}
+		return optionalAirplaneType.get();
+	}
+
 	public List<Airplane> findBySearchAndFilter(Map<String, String> filterMap) {
 		List<Airplane> airplanes = findAll();
 		if(!filterMap.keySet().isEmpty()) {
@@ -71,7 +79,7 @@ public class AirplaneService {
 			try {
 				Integer parsedTypeId = Integer.parseInt(filterMap.get(airplaneTypeId));
 				airplanes = airplanes.stream()
-				.filter(i -> i.getAirplaneTypeId().equals(parsedTypeId))
+				.filter(i -> i.getAirplaneType().getAirplaneTypeId().equals(parsedTypeId))
 				.collect(Collectors.toList());
 			}
 			catch(IllegalArgumentException err){/*Do nothing*/}
@@ -99,7 +107,7 @@ public class AirplaneService {
 			
 			String airplaneAsString = 
 			airplane.getAirplaneId().toString() + 
-			airplane.getAirplaneTypeId().toString()
+			airplane.getAirplaneType().getAirplaneTypeId().toString()
 			.toLowerCase(Locale.getDefault());
 			
 			for(String term : splitTerms) {
@@ -163,8 +171,9 @@ public class AirplaneService {
 			throw new AirplaneTypeNotFoundException("No AirplaneType with ID: " + airplaneTypeId + " exists.");
 		}
 		
+		AirplaneType airplaneType = findAirplaneTypeById(airplaneTypeId);
 		Airplane airplane = findById(airplaneId);
-		airplane.setAirplaneTypeId(airplaneTypeId);
+		airplane.setAirplaneType(airplaneType);
 		return airplaneRepository.save(airplane);
 	}
 }

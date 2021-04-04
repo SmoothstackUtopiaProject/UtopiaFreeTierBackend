@@ -8,8 +8,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ss.utopia.bookingms.exceptions.BookingAlreadyExistsException;
 import com.ss.utopia.bookingms.exceptions.BookingGuestNotFoundException;
 import com.ss.utopia.bookingms.exceptions.BookingNotFoundException;
@@ -22,9 +20,9 @@ import com.ss.utopia.bookingms.models.BookingWithReferenceData;
 import com.ss.utopia.bookingms.models.Flight;
 import com.ss.utopia.bookingms.models.FlightBooking;
 import com.ss.utopia.bookingms.models.Passenger;
-import com.ss.utopia.bookingms.repositories.FlightBookingRepository;
+import com.ss.utopia.bookingms.repositories.BookingFlightRepository;
 import com.ss.utopia.bookingms.repositories.BookingRepository;
-import com.ss.utopia.bookingms.repositories.PassengerRepository;
+import com.ss.utopia.bookingms.repositories.BookingPassengerRepository;
 
 @Service
 public class BookingService {
@@ -39,10 +37,10 @@ public class BookingService {
 	private BookingUserService bookingUserService;
 
 	@Autowired 
-	private FlightBookingRepository flightBookingRepository;
+	private BookingFlightRepository flightBookingRepository;
 
 	@Autowired 
-	private PassengerRepository passengerRepository;
+	private BookingPassengerRepository passengerRepository;
 
 
 	public List<Booking> findAll() {

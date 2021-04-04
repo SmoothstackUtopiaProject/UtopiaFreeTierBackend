@@ -8,7 +8,6 @@ import com.ss.utopia.bookingms.exceptions.BookingUserNotFoundException;
 import com.ss.utopia.bookingms.models.BookingUser;
 import com.ss.utopia.bookingms.models.User;
 import com.ss.utopia.bookingms.repositories.BookingUserRepository;
-import com.ss.utopia.bookingms.repositories.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,9 +20,6 @@ public class BookingUserService {
 
 	@Autowired 
 	private BookingUserRepository bookingUserRepository;
-
-	@Autowired 
-	private UserRepository userRepository;
 
 	public List<BookingUser> findAll() {
 		return bookingUserRepository.findAll();
@@ -50,7 +46,7 @@ public class BookingUserService {
 	}
 
 	public User findUserByUserId(Integer userId) throws BookingUserNotFoundException {
-		Optional<User> optionalUser = userRepository.findById(userId);
+		Optional<User> optionalUser = bookingUserRepository.findUserByUserId(userId);
 		if(!optionalUser.isPresent()) {
 			throw new BookingUserNotFoundException(
 				"No User with ID: " + userId + " exists."

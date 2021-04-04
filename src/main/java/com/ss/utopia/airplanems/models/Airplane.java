@@ -1,6 +1,8 @@
 package com.ss.utopia.airplanems.models;
 
 import javax.persistence.Column;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -17,16 +19,20 @@ public class Airplane {
 	private Integer airplaneId;
 	
 	@NotNull(message = "Type ID should not be empty")
-	@Column(name = "type_id", nullable = false)
-	private Integer airplaneTypeId;
+	@ManyToOne
+	@JoinColumn(name = "type_id", nullable = false)
+	private AirplaneType airplaneType;
 
 	public Airplane() {}
-	public Airplane(Integer airplaneTypeId) {
-		this.airplaneTypeId = airplaneTypeId;
+	public Airplane(AirplaneType airplaneType) {
+		this.airplaneType = airplaneType;
 	}
-	public Airplane(Integer airplaneId, Integer airplaneTypeId) {
+	public Airplane(Integer airplaneId, AirplaneType airplaneType) {
 		this.airplaneId = airplaneId;
-		this.airplaneTypeId = airplaneTypeId;
+		this.airplaneType = airplaneType;
+	}
+	public Airplane(Integer airplaneId) {
+		this.airplaneId = airplaneId;
 	}
 
 	public Integer getAirplaneId() {
@@ -37,11 +43,12 @@ public class Airplane {
 		this.airplaneId = airplaneId;
 	}
 
-	public Integer getAirplaneTypeId() {
-		return airplaneTypeId;
+	public AirplaneType getAirplaneType() {
+		return airplaneType;
 	}
 
-	public void setAirplaneTypeId(Integer airplaneTypeId) {
-		this.airplaneTypeId = airplaneTypeId;
+	public void setAirplaneType(AirplaneType airplaneType) {
+		this.airplaneType = airplaneType;
 	}
+	
 }
