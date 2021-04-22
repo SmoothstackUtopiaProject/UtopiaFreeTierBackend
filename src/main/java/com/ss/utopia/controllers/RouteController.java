@@ -1,4 +1,4 @@
-package com.ss.utopia;
+package com.ss.utopia.controllers;
 
 import java.net.ConnectException;
 import java.sql.SQLException;

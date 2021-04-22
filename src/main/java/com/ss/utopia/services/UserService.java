@@ -63,8 +63,9 @@ public class UserService {
 		return userRepository.save(user);
 	}
 
-	public void delete(Integer id) throws UserNotFoundException {
-		findById(id);
-		userRepository.deleteById(id);
+	public String delete(Integer userId) throws UserNotFoundException {
+		findById(userId);
+		userRepository.deleteById(userId);
+		return "User with ID: " + userId + " was deleted.";
 	}
 }
