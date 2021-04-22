@@ -74,8 +74,8 @@ public class UserController {
 	}
 
 	@PutMapping()
-	public ResponseEntity<Object> update(@PathVariable Integer id, @RequestBody User user) throws UserNotFoundException {
-		userService.findById(id);
+	public ResponseEntity<Object> update(@RequestBody User user) throws UserNotFoundException {
+		userService.findById(user.getUserId());
 		return new ResponseEntity<>(userService.update(user), HttpStatus.CREATED);
 	}
 
