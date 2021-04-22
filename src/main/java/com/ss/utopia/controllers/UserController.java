@@ -75,7 +75,8 @@ public class UserController {
 
 	@PutMapping()
 	public ResponseEntity<Object> update(@RequestBody User user) throws UserNotFoundException {
-		userService.findById(user.getUserId());
+		User currentUser = userService.findById(user.getUserId());
+		user.setUserPassword(currentUser.getUserPassword()); // <- ignore password changes
 		return new ResponseEntity<>(userService.update(user), HttpStatus.CREATED);
 	}
 
