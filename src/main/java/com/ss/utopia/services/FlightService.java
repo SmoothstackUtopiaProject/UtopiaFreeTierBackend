@@ -19,19 +19,19 @@ import com.ss.utopia.models.Airplane;
 import com.ss.utopia.models.Flight;
 import com.ss.utopia.models.Route;
 import com.ss.utopia.repositories.FlightRepository;
-import com.ss.utopia.timeformatting.FlightTimeFormatter;
 
 @Service
 public class FlightService {
 
 	private static final Integer MINIMUM_AIRPLANE_NOFLIGHT_HOURS = 2;
+	private static final Integer SHORTEST_FLIGHT_DURATION = 3600;
 
 	@Autowired
 	private FlightRepository flightRepository;
 
 	// Find All
 	public List<Flight> findAll() {
-		return flightRepository.findAll();
+		return flightRepository.findAll();		
 	}
 	
 	// Find By ID
@@ -55,11 +55,14 @@ public class FlightService {
 	// Insert
 	public Flight insert(Integer routeId ,Integer airplaneId , String dateTime, 
 	Integer seatingId, Integer duration, String status) throws AirplaneAlreadyInUseException, 
-	FlightNotFoundException, AirplaneNotFoundException, IllegalArgumentException {
+	RouteNotFoundException, AirplaneNotFoundException, IllegalArgumentException {
+		
+		//input validation
+		validateInput(routeId, airplaneId, dateTime, seatingId, duration);
 
 		Optional<Route> optionalRoute = flightRepository.findRouteById(routeId);
 		if(!optionalRoute.isPresent()) {
-			throw new FlightNotFoundException("No Route with ID: " + routeId + " exist.");
+			throw new RouteNotFoundException("No Route with ID: " + routeId + " exist.");
 		}
 		Route route = optionalRoute.get();
 		
@@ -68,16 +71,12 @@ public class FlightService {
 			throw new AirplaneNotFoundException("No Airplane with ID: " + airplaneId + " exist.");
 		}
 		Airplane airplane = optionalAirplane.get();
-
-		if(!LocalDateTime.parse(dateTime, FlightTimeFormatter.getInstance()).isAfter(LocalDateTime.now())){
-			throw new IllegalArgumentException("Departure time: " + dateTime +" cannot be in the past.");
-		}
 		
 		List<Flight> flightsWithAirplaneId = flightRepository.findFlightsByAirplaneId(airplaneId)
 			.stream().filter(i -> 
 			Math.abs(Duration.between(
-					LocalDateTime.parse(dateTime, FlightTimeFormatter.getInstance()), 
-					LocalDateTime.parse(i.getFlightDepartureTime(), FlightTimeFormatter.getInstance())
+					LocalDateTime.parse(dateTime), 
+					LocalDateTime.parse(i.getFlightDepartureTime())
 				).toHours()) < MINIMUM_AIRPLANE_NOFLIGHT_HOURS
 			)
 			.collect(Collectors.toList());
@@ -96,6 +95,12 @@ public class FlightService {
 	Integer seatingId, Integer duration, String status) throws AirplaneAlreadyInUseException, 
 	FlightNotFoundException, RouteNotFoundException, AirplaneNotFoundException, IllegalArgumentException {
 
+		//input validation
+		validateInput(routeId, airplaneId, dateTime, seatingId, duration);
+		if(!isValidIdInput(id)) {
+			throw new IllegalArgumentException("Flight ID: "+ id+ " is not valid.");
+		}
+
 		Optional<Flight> optionalFlight = flightRepository.findById(id);
 		if(!optionalFlight.isPresent()) {
 			throw new FlightNotFoundException("No flight with the id: " + id + " exists!");
@@ -112,16 +117,12 @@ public class FlightService {
 			throw new AirplaneNotFoundException("No Airplane with ID: " + airplaneId + " exist.");
 		}
 		Airplane airplane = optionalAirplane.get();
-
-		if(!LocalDateTime.parse(dateTime, FlightTimeFormatter.getInstance()).isAfter(LocalDateTime.now())){
-			throw new IllegalArgumentException("Departure time: " + dateTime +" cannot be in the past.");
-		}
 		
 		List<Flight> flightsWithAirplaneId = flightRepository.findFlightsByAirplaneId(airplaneId)
 				.stream().filter(i -> 
 				(Math.abs(Duration.between(
-						LocalDateTime.parse(dateTime, FlightTimeFormatter.getInstance()), 
-						LocalDateTime.parse(i.getFlightDepartureTime(), FlightTimeFormatter.getInstance())
+						LocalDateTime.parse(dateTime), 
+						LocalDateTime.parse(i.getFlightDepartureTime())
 					).toHours()) < MINIMUM_AIRPLANE_NOFLIGHT_HOURS
 				) && !i.getFlightId().equals(id))
 				.collect(Collectors.toList());
@@ -143,5 +144,28 @@ public class FlightService {
 		}
 		flightRepository.deleteById(id);
 		return "Flight with ID: " + id + " was deleted.";
+	}
+
+	public Boolean isValidIdInput(Integer i){
+		return i < 1 ? false : true;
+	}
+
+	public void validateInput(Integer routeId, Integer airplaneId, String dateTime, 
+	Integer seatingId, Integer duration) throws IllegalArgumentException {
+		if(!isValidIdInput(routeId)) {
+			throw new IllegalArgumentException("Route ID: "+ routeId+ " is not valid.");
+		}
+		if(!isValidIdInput(airplaneId)) {
+			throw new IllegalArgumentException("Airplane ID: "+ airplaneId+ " is not valid.");
+		}
+		if(!isValidIdInput(seatingId)) {
+			throw new IllegalArgumentException("Seating ID: "+ seatingId+ " is not valid.");
+		}
+		if(duration < SHORTEST_FLIGHT_DURATION) {
+			throw new IllegalArgumentException("Flight Duration has to be more than 1 hour");
+		}
+		if(LocalDateTime.parse(dateTime).isBefore(LocalDateTime.now())){
+			throw new IllegalArgumentException("Departure time: " + dateTime +" cannot be in the past.");
+		}
 	}
 }
