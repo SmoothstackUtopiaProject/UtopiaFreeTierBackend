@@ -129,7 +129,7 @@ public class AirplaneService {
 		if(!optionalType.isPresent()) {
 			throw new AirplaneTypeNotFoundException("No AirplaneType with ID: " + airplaneTypeId + " exist.");
 		}
-		return airplaneRepository.save(new Airplane(airplaneTypeId));
+		return airplaneRepository.save(new Airplane(optionalType.get()));
 	}
 
 	public AirplaneType insertAirplaneType(

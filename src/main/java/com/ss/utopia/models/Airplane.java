@@ -31,9 +31,6 @@ public class Airplane {
 		this.airplaneId = airplaneId;
 		this.airplaneType = airplaneType;
 	}
-	public Airplane(Integer airplaneId) {
-		this.airplaneId = airplaneId;
-	}
 
 	public Integer getAirplaneId() {
 		return airplaneId;
