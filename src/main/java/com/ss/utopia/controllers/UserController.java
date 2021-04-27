@@ -7,11 +7,8 @@ import com.ss.utopia.models.ErrorMessage;
 import com.ss.utopia.models.Role;
 import com.ss.utopia.models.User;
 import com.ss.utopia.services.UserService;
-
-
 import java.net.ConnectException;
 import java.sql.SQLException;
-
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +31,6 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin
 @RequestMapping(value = "/users")
 public class UserController {
-
 
   @Autowired
   UserService userService;
@@ -61,7 +57,6 @@ public class UserController {
     return new ResponseEntity<>(userService.insert(user), HttpStatus.CREATED);
   }
 
-
   @GetMapping("{userId}")
   public ResponseEntity<Object> findById(@PathVariable Integer userId)
     throws UserNotFoundException {
@@ -83,77 +78,77 @@ public class UserController {
     return new ResponseEntity<>(user, HttpStatus.OK);
   }
 
-  @DeleteMapping("{userId}")
-  public ResponseEntity<Object> delete(@PathVariable Integer userId)
+  //   @DeleteMapping("{userId}")
+  //   public ResponseEntity<Object> delete(@PathVariable Integer userId)
+  //     throws UserNotFoundException {
+  //     userService.delete(userId);
+  //     return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+  //   }
+
+  // 	@PostMapping
+  // 	public ResponseEntity<Object> insert(@RequestBody User user) throws UserAlreadyExistsException {
+  // 		user.setUserRole(Role.USER);
+  // 		return new ResponseEntity<>(userService.insert(user), HttpStatus.CREATED);
+  // 	}
+
+  @PutMapping
+  public ResponseEntity<Object> update(@RequestBody User user)
     throws UserNotFoundException {
-    userService.delete(userId);
-    return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+    User currentUser = userService.findById(user.getUserId());
+    user.setUserPassword(currentUser.getUserPassword()); // <- ignore password changes
+    return new ResponseEntity<>(userService.update(user), HttpStatus.CREATED);
   }
 
-// 	@PostMapping
-// 	public ResponseEntity<Object> insert(@RequestBody User user) throws UserAlreadyExistsException {
-// 		user.setUserRole(Role.USER);
-// 		return new ResponseEntity<>(userService.insert(user), HttpStatus.CREATED);
-// 	}
+  @DeleteMapping("{userId}")
+  public ResponseEntity<Object> delete(@PathVariable String userId)
+    throws UserNotFoundException, NumberFormatException {
+    Integer formattedUserId = Integer.parseInt(userId);
+    String deleteInformation = userService.delete(formattedUserId);
+    return new ResponseEntity<>(deleteInformation, HttpStatus.ACCEPTED);
+  }
 
-	@PutMapping()
-	public ResponseEntity<Object> update(@RequestBody User user) throws UserNotFoundException {
-		User currentUser = userService.findById(user.getUserId());
-		user.setUserPassword(currentUser.getUserPassword()); // <- ignore password changes
-		return new ResponseEntity<>(userService.update(user), HttpStatus.CREATED);
-	}
+  @ExceptionHandler(UserNotFoundException.class)
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  public ResponseEntity<Object> userNotFoundException(Throwable err) {
+    return new ResponseEntity<>(
+      new ErrorMessage(err.getMessage()),
+      HttpStatus.NOT_FOUND
+    );
+  }
 
-	@DeleteMapping("{userId}")
-	public ResponseEntity<Object> delete(@PathVariable String userId) 
-	throws UserNotFoundException, NumberFormatException {
-		Integer formattedUserId = Integer.parseInt(userId);
-		String deleteInformation = userService.delete(formattedUserId);
-		return new ResponseEntity<>(deleteInformation, HttpStatus.ACCEPTED);
-	}
+  @ExceptionHandler(UserRoleNotFoundException.class)
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  public ResponseEntity<Object> userTypeNotFoundException(Throwable err) {
+    return new ResponseEntity<>(
+      new ErrorMessage(err.getMessage()),
+      HttpStatus.NOT_FOUND
+    );
+  }
 
-	@ExceptionHandler(UserNotFoundException.class)
-	@ResponseStatus(HttpStatus.NOT_FOUND)
-	public ResponseEntity<Object> userNotFoundException(Throwable err) {
-		return new ResponseEntity<>(
-			new ErrorMessage(err.getMessage()), 
-			HttpStatus.NOT_FOUND
-		);
-	}
+  @ExceptionHandler(ConnectException.class)
+  @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+  public ResponseEntity<Object> invalidConnection() {
+    return new ResponseEntity<>(
+      new ErrorMessage("Service temporarily unavailabe."),
+      HttpStatus.SERVICE_UNAVAILABLE
+    );
+  }
 
-	@ExceptionHandler(UserRoleNotFoundException.class)
-	@ResponseStatus(HttpStatus.NOT_FOUND)
-	public ResponseEntity<Object> userTypeNotFoundException(Throwable err) {
-		return new ResponseEntity<>(
-			new ErrorMessage(err.getMessage()), 
-			HttpStatus.NOT_FOUND
-		);
-	}
+  @ExceptionHandler(HttpMessageNotReadableException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ResponseEntity<Object> invalidMessage() {
+    return new ResponseEntity<>(
+      new ErrorMessage("Invalid HTTP message content."),
+      HttpStatus.BAD_REQUEST
+    );
+  }
 
-	@ExceptionHandler(ConnectException.class)
-	@ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
-	public ResponseEntity<Object> invalidConnection() {
-		return new ResponseEntity<>(
-			new ErrorMessage("Service temporarily unavailabe."), 
-			HttpStatus.SERVICE_UNAVAILABLE
-		);
-	}
-
-	@ExceptionHandler(HttpMessageNotReadableException.class)
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public ResponseEntity<Object> invalidMessage() {
-		return new ResponseEntity<>(
-			new ErrorMessage("Invalid HTTP message content."), 
-			HttpStatus.BAD_REQUEST
-		);
-	}
-
-	@ExceptionHandler(SQLException.class)
-	@ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
-	public ResponseEntity<Object> invalidSQL() {
-		return new ResponseEntity<>(
-			new ErrorMessage("Service temporarily unavailabe."), 
-			HttpStatus.SERVICE_UNAVAILABLE
-		);
-	}
-
+  @ExceptionHandler(SQLException.class)
+  @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+  public ResponseEntity<Object> invalidSQL() {
+    return new ResponseEntity<>(
+      new ErrorMessage("Service temporarily unavailabe."),
+      HttpStatus.SERVICE_UNAVAILABLE
+    );
+  }
 }
