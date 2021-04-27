@@ -26,7 +26,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
 
-
   @Autowired
   UserRepository userRepository;
 
@@ -72,19 +71,28 @@ public class UserService {
     return userRepository.save(user);
   }
 
-  public User update(Integer id, Map<String, String> userData)
-    throws UserNotFoundException {
-    User user = findById(id);
-    user.setUserEmail(userData.get("userFirstName"));
-    user.setUserFirstName(userData.get("userLastName"));
-    user.setUserLastName(userData.get("userEmail"));
-    user.setUserPhone(userData.get("userPhone"));
+  // public User update(Integer id, Map<String, String> userData)
+  //   throws UserNotFoundException {
+  //   User user = findById(id);
+  //   user.setUserEmail(userData.get("userFirstName"));
+  //   user.setUserFirstName(userData.get("userLastName"));
+  //   user.setUserLastName(userData.get("userEmail"));
+  //   user.setUserPhone(userData.get("userPhone"));
+  //   return userRepository.save(user);
+  // }
+  public User update(User user) {
     return userRepository.save(user);
   }
 
-  public void delete(Integer id) throws UserNotFoundException {
-    findById(id);
-    userRepository.deleteById(id);
+  // public void delete(Integer id) throws UserNotFoundException {
+  //   findById(id);
+  //   userRepository.deleteById(id);
+  // }
+
+  public String delete(Integer userId) throws UserNotFoundException {
+    findById(userId);
+    userRepository.deleteById(userId);
+    return "User with ID: " + userId + " was deleted.";
   }
 
   public MailResponse sendRecoveryEmail(String email)

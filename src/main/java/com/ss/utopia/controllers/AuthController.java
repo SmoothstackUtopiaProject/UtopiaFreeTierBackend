@@ -123,21 +123,21 @@ public class AuthController {
     );
   }
 
-  @PutMapping("{userId}")
-  public ResponseEntity<Object> update(
-    @PathVariable Integer userId,
-    @RequestBody Map<String, String> userData
-  )
-    throws UserNotFoundException {
-    LOGGER.info("Update user id: " + userId);
-    User user = userService.update(userId, userData);
-    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-      user.getUserEmail(),
-      user.getUserPassword()
-    );
-    user.setUserToken(tokenProvider.generateToken(authenticationToken));
-    return new ResponseEntity<>(user, HttpStatus.OK);
-  }
+  // @PutMapping("{userId}")
+  // public ResponseEntity<Object> update(
+  //   @PathVariable Integer userId,
+  //   @RequestBody Map<String, String> userData
+  // )
+  //   throws UserNotFoundException {
+  //   LOGGER.info("Update user id: " + userId);
+  //   User user = userService.update(userId, userData);
+  //   UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+  //     user.getUserEmail(),
+  //     user.getUserPassword()
+  //   );
+  //   user.setUserToken(tokenProvider.generateToken(authenticationToken));
+  //   return new ResponseEntity<>(user, HttpStatus.OK);
+  // }
 
   @DeleteMapping("{userId}")
   public ResponseEntity<Object> delete(@PathVariable Integer userId)
