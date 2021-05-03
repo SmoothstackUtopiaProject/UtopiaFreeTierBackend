@@ -24,6 +24,8 @@ public class UtopiaFreeTierBackend {
 
         // Stripe
         if(lineText.startsWith(STRIPE_API_KEY)) {
+          System.out.println("====================================================");
+          System.out.println(lineText.split("=")[1]);
           Stripe.apiKey = lineText.split("=")[1];
         }
 
