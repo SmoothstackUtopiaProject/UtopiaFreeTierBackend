@@ -54,9 +54,8 @@ public class AuthController {
   public ResponseEntity<Object> insert(@RequestBody User user)
     throws UserAlreadyExistsException {
     LOGGER.info("POST new user");
-    if (user.getUserRole().equals(null)) {
-      user.setUserRole(Role.USER);
-    }
+    user.setUserRole(Role.USER);
+
     return new ResponseEntity<>(userService.insert(user), HttpStatus.CREATED);
   }
 
