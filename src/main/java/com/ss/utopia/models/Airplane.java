@@ -18,7 +18,6 @@ public class Airplane {
 	@Column(name = "id")
 	private Integer airplaneId;
 	
-	@NotNull(message = "Type ID should not be empty")
 	@ManyToOne
 	@JoinColumn(name = "type_id", nullable = false)
 	private AirplaneType airplaneType;
@@ -30,6 +29,10 @@ public class Airplane {
 	public Airplane(Integer airplaneId, AirplaneType airplaneType) {
 		this.airplaneId = airplaneId;
 		this.airplaneType = airplaneType;
+	}
+
+	public Airplane(Integer airplaneId) {
+		this.airplaneId = airplaneId;
 	}
 
 	public Integer getAirplaneId() {
