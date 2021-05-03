@@ -74,9 +74,9 @@ public class UserService {
   public User updateUser(Integer id, Map<String, String> userData)
     throws UserNotFoundException {
     User user = findById(id);
-    user.setUserEmail(userData.get("userFirstName"));
-    user.setUserFirstName(userData.get("userLastName"));
-    user.setUserLastName(userData.get("userEmail"));
+    user.setUserEmail(userData.get("userEmail"));
+    user.setUserFirstName(userData.get("userFirstName"));
+    user.setUserLastName(userData.get("userLastName"));
     user.setUserPhone(userData.get("userPhone"));
     return userRepository.save(user);
   }
