@@ -57,8 +57,9 @@ public class FlightService {
 	Integer seatingId, Integer duration, String status) throws AirplaneAlreadyInUseException, 
 	RouteNotFoundException, AirplaneNotFoundException, IllegalArgumentException {
 		
+		String formattedDateTime = dateTime.replace(" ", "T");
 		//input validation
-		validateInput(routeId, airplaneId, dateTime, seatingId, duration);
+		validateInput(routeId, airplaneId, formattedDateTime, seatingId, duration);
 
 		Optional<Route> optionalRoute = flightRepository.findRouteById(routeId);
 		if(!optionalRoute.isPresent()) {
@@ -75,8 +76,8 @@ public class FlightService {
 		List<Flight> flightsWithAirplaneId = flightRepository.findFlightsByAirplaneId(airplaneId)
 			.stream().filter(i -> 
 			Math.abs(Duration.between(
-					LocalDateTime.parse(dateTime), 
-					LocalDateTime.parse(i.getFlightDepartureTime())
+					LocalDateTime.parse(formattedDateTime), 
+					LocalDateTime.parse(i.getFlightDepartureTime().replace(" ", "T"))
 				).toHours()) < MINIMUM_AIRPLANE_NOFLIGHT_HOURS
 			)
 			.collect(Collectors.toList());
@@ -95,8 +96,9 @@ public class FlightService {
 	Integer seatingId, Integer duration, String status) throws AirplaneAlreadyInUseException, 
 	FlightNotFoundException, RouteNotFoundException, AirplaneNotFoundException, IllegalArgumentException {
 
+		String formattedDateTime = dateTime.replace(" ", "T");
 		//input validation
-		validateInput(routeId, airplaneId, dateTime, seatingId, duration);
+		validateInput(routeId, airplaneId, formattedDateTime, seatingId, duration);
 		if(!isValidIdInput(id)) {
 			throw new IllegalArgumentException("Flight ID: "+ id+ " is not valid.");
 		}
@@ -121,8 +123,8 @@ public class FlightService {
 		List<Flight> flightsWithAirplaneId = flightRepository.findFlightsByAirplaneId(airplaneId)
 				.stream().filter(i -> 
 				(Math.abs(Duration.between(
-						LocalDateTime.parse(dateTime), 
-						LocalDateTime.parse(i.getFlightDepartureTime())
+						LocalDateTime.parse(formattedDateTime), 
+						LocalDateTime.parse(i.getFlightDepartureTime().replace(" ", "T"))
 					).toHours()) < MINIMUM_AIRPLANE_NOFLIGHT_HOURS
 				) && !i.getFlightId().equals(id))
 				.collect(Collectors.toList());
