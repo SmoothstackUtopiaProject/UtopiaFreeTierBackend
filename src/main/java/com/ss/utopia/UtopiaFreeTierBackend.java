@@ -1,8 +1,6 @@
 package com.ss.utopia;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.util.Map;
 
 import com.stripe.Stripe;
 
@@ -12,28 +10,17 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class UtopiaFreeTierBackend {
 
-  private static final String STRIPE_API_KEY = "stripe.apiKey";
+  private static final String STRIPE_API_KEY = "STRIPE_API_KEY";
 
   public static void main(String[] args) {
-    // aapplication.properties
-    try (BufferedReader bufferedReader = new BufferedReader(
-      new FileReader("src/main/resources/application.properties")
-    )) {
-      String lineText;
-      while ((lineText = bufferedReader.readLine()) != null) {
-
-        // Stripe
-        if(lineText.startsWith(STRIPE_API_KEY)) {
-          System.out.println("====================================================");
-          System.out.println(lineText.split("=")[1]);
-          Stripe.apiKey = lineText.split("=")[1];
-        }
-
+    Map<String, String> env = System.getenv();
+    for (String envName : env.keySet()) {
+      // Stripe
+      if(envName.equals(STRIPE_API_KEY)) {
+        System.out.println("===================== I GOT IT! ====================");
+        System.out.println(env.get(STRIPE_API_KEY));
+        Stripe.apiKey = env.get(STRIPE_API_KEY);
       }
-    } 
-    catch (IOException error) {
-      System.err.println("[ERROR] Unable to find application.properties, shutting down . . .");
-      System.exit(0);
     }
 
     // Run
