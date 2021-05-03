@@ -71,15 +71,16 @@ public class UserService {
     return userRepository.save(user);
   }
 
-  // public User update(Integer id, Map<String, String> userData)
-  //   throws UserNotFoundException {
-  //   User user = findById(id);
-  //   user.setUserEmail(userData.get("userFirstName"));
-  //   user.setUserFirstName(userData.get("userLastName"));
-  //   user.setUserLastName(userData.get("userEmail"));
-  //   user.setUserPhone(userData.get("userPhone"));
-  //   return userRepository.save(user);
-  // }
+  public User updateUser(Integer id, Map<String, String> userData)
+    throws UserNotFoundException {
+    User user = findById(id);
+    user.setUserEmail(userData.get("userFirstName"));
+    user.setUserFirstName(userData.get("userLastName"));
+    user.setUserLastName(userData.get("userEmail"));
+    user.setUserPhone(userData.get("userPhone"));
+    return userRepository.save(user);
+  }
+
   public User update(User user) {
     return userRepository.save(user);
   }
