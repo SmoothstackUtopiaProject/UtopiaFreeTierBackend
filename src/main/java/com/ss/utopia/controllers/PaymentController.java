@@ -3,6 +3,8 @@ package com.ss.utopia.controllers;
 import java.net.ConnectException;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,8 @@ import com.ss.utopia.exceptions.PaymentStatusNotFoundException;
 import com.ss.utopia.models.Payment;
 import com.ss.utopia.models.ErrorMessage;
 import com.ss.utopia.services.PaymentService;
+import com.stripe.exception.StripeException;
+import com.stripe.model.PaymentIntent;
 
 @RestController
 @RequestMapping("/payments")
@@ -75,6 +79,34 @@ public class PaymentController {
 		return !payments.isEmpty()
 			? new ResponseEntity<>(payments, HttpStatus.OK)
 			: new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	}
+
+	@PostMapping("/create-payment-session")
+	public ResponseEntity<Object> createSession() {
+		List<Object> paymentMethodTypes = new ArrayList<>();
+		paymentMethodTypes.add("card");
+		Map<String, Object> params = new HashMap<>();
+		params.put("amount", 2000);
+		params.put("currency", "usd");
+		params.put(
+			"payment_method_types",
+			paymentMethodTypes
+		);
+
+		PaymentIntent paymentIntent;
+		try {
+			paymentIntent = PaymentIntent.create(params);
+			Map<String, String> paymentMap = new HashMap<>();
+			paymentMap.put("clientSecret", paymentIntent.getClientSecret());
+			return new ResponseEntity<>(paymentMap, HttpStatus.OK);
+		} 
+		catch (StripeException e) {
+			System.out.println(e);
+			return new ResponseEntity<>(
+				new ErrorMessage("Service temporarily unavailabe."), 
+				HttpStatus.SERVICE_UNAVAILABLE
+			);
+		}
 	}
 
 	@PostMapping
