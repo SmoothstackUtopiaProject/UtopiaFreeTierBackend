@@ -127,7 +127,7 @@ public class UserService {
     ) throw new PasswordNotAllowedException(
       "Previously used password not allowed"
     );
-    user.setUserPassword(password);
+    user.setUserPassword(passwordEncoder.encode(password));
     userRepository.save(user);
   }
 

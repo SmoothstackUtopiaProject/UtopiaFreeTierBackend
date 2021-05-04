@@ -113,6 +113,7 @@ public class AuthController {
     LOGGER.info("Change password request");
     String recoveryCode = uMap.get("recoveryCode");
     String password = uMap.get("password");
+
     userService.ChangePassword(
       userTokenService.verifyToken(recoveryCode),
       password
