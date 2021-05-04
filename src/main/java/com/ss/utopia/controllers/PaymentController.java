@@ -82,11 +82,19 @@ public class PaymentController {
 	}
 
 	@PostMapping("/create-payment-session")
-	public ResponseEntity<Object> createSession() {
+	public ResponseEntity<Object> createSession(@RequestBody Map<String, String> paymentSessionMap) {
+		if(!paymentSessionMap.containsKey("paymentAmount")) {
+			return new ResponseEntity<>(
+				new ErrorMessage("[Invalid Payment]: Missing payment amount."), 
+				HttpStatus.BAD_REQUEST
+				);
+			}
+				
 		List<Object> paymentMethodTypes = new ArrayList<>();
-		paymentMethodTypes.add("card");
 		Map<String, Object> params = new HashMap<>();
-		params.put("amount", 2000);
+		Float paymentAmount = Float.parseFloat(paymentSessionMap.get("paymentAmount").replaceAll("[^0-9.]", ""));
+		paymentMethodTypes.add("card");
+		params.put("amount", paymentAmount);
 		params.put("currency", "usd");
 		params.put(
 			"payment_method_types",
